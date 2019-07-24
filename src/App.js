@@ -4,19 +4,43 @@ import HomePage from './pages/homepage/homepage.component.jsx';
 import './App.css';
 import ShopPage from './pages/shop/shop.component';
 import Header from './components/header-component/header.component';
+import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
+import {auth} from './firebase/firebase.utils';
 
 
-const App = () => {
-  return (
-    <div>
-      <Header/>
-      <Switch>
-        <Route exact path = "/" component = {HomePage} />
-        <Route  path = "/shop" component = {ShopPage} />
-      </Switch>
-    </div>
-  )
-  
+class App extends React.Component{
+  constructor(){
+    super()
+    this.state = {
+      currentUser : null
+    }
+  }
+
+  componentDidMount(){
+    this.unSubscribeFromauth = auth.onAuthStateChanged(user => {
+      this.setState({currentUser : user})
+      console.log(user);
+    })
+  }
+
+  unSubscribeFromauth = null;
+
+  componentWillUnmount(){
+    this.unSubscribeFromauth();
+  }
+
+  render(){
+    return (
+      <div>
+        <Header currentUser = {this.state.currentUser}/>
+        <Switch>
+          <Route exact path = "/" component = {HomePage} />
+          <Route  path = "/shop" component = {ShopPage} />
+          <Route  path = "/signin" component = {SignInAndSignUpPage} />
+        </Switch>
+      </div>
+    )
+  }
 }
 
 export default App;
